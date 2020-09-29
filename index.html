@@ -12,9 +12,12 @@
     text-align: center;
   }
 
+
   .GameContainer {
     display: grid;
+    margin: 0 auto;
     grid-template-columns: auto auto auto auto auto auto auto;
+    width : 40%;
     grid-gap: 10px;
     background-color: #2196F3;
     padding: 10px;
@@ -35,8 +38,9 @@
     transition: background-color 400ms linear;
     display: block;
     background-color: rgb(255, 255, 255, 0.2);
-    height: 50px;
-    padding: 10px;
+
+    width: 100%;
+    padding-top: 100%; /* 1:1 Aspect Ratio */ 
   }
 
   .GameContainer > .GameColumn > .ButtonField{
@@ -209,44 +213,54 @@
     return (row - 1);
   }
 
-  function isWinner(board, lastMove, playerTag)
+  function getNeighboursNumber(startingPosition, movePattern, playerTag, board)
   {
     let neighboursNumber = 0;
-    let currentRow = lastMove[0];
-    const column = lastMove[1];
-    const row = lastMove[0];
-
-    while (currentRow < gameState.rules.boardHeight && board[currentRow][column] == playerTag)
+    coordsToCheck = [startingPosition[0], startingPosition[1]];
+    while(true)
     {
-      neighboursNumber++;
-      currentRow++;
+      coordsToCheck[0] += movePattern[0];
+      coordsToCheck[1] += movePattern[1];
+      if (coordsToCheck[0] < 0 || coordsToCheck[0] >= gameState.rules.boardHeight ||
+      coordsToCheck[1] < 0 || coordsToCheck[1] >= gameState.rules.boardWidth)
+      {
+        console.info("Out of bounds for: " + coordsToCheck);
+        break;
+      }
+      console.info("CoordsToCheck: " + coordsToCheck[0] + " " + coordsToCheck[1] + " value is " + board[coordsToCheck[0]][coordsToCheck[1]]);
+      if (board[coordsToCheck[0]][coordsToCheck[1]] === playerTag)
+      {
+        neighboursNumber++;
+        console.info("Neighbours increased to: " + neighboursNumber);
+      }
+      else
+      {
+        break;
+      }
     }
+    console.info("returning neghbour in number of: " + neighboursNumber);
+    return neighboursNumber;
+  }
 
-    if (neighboursNumber >= 4)
+  function isWinner(board, lastMove, playerTag)
+  {
+    movePatterns = [[0 , 1], [1, 0], [-1, -1], [-1, 1]];
+  
+    for (let movePattern of movePatterns) 
     {
-      return true;
+      let neighboursNumber = getNeighboursNumber(lastMove, movePattern, playerTag, board);
+      neighboursNumber += getNeighboursNumber(lastMove, [movePattern[0] * (-1), movePattern[1] * (-1)], playerTag, board);
+      neighboursNumber += 1;
+      if (neighboursNumber >= 4)
+      {
+        console.info("Win for player: " +playerTag + " points: " + neighboursNumber + " move pattern: " + movePattern);
+        return true;
+      }
+      else
+      {
+        console.info(playerTag + " points: " + neighboursNumber + " move pattern: " + movePattern + " moving to next pattern");
+      }
     }
-
-    neighboursNumber = 0;
-    let currentColumn = lastMove[1];
-    while (currentRow != -1 && board[row][currentColumn] == playerTag)
-    {
-      neighboursNumber++;
-      currentColumn--;;
-    }
-
-    while (currentRow != gameState.rules.boardHeight && board[row][currentColumn] == playerTag)
-    {
-      neighboursNumber++;
-      currentColumn++;
-    }
-
-    if (neighboursNumber == 4)
-    {
-      return true;
-    }
-
-    return false;
   }
 
   function getGameColumn(columnNumber)
