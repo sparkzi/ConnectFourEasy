@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+<script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+<style>
+  h1, h3{
+    text-align: center;
+  }
+  #GameHud{
+    text-align: center;
+  }
+
+  .GameContainer {
+    display: grid;
+    grid-template-columns: auto auto auto auto auto auto auto;
+    grid-gap: 10px;
+    background-color: #2196F3;
+    padding: 10px;
+    visibility:visible;
+    opacity: 0;
+    transition: opacity 1s linear;
+  }
+
+  .GameContainer > .GameColumn{
+    display: grid;
+    grid-template-columns: auto;
+    grid-gap: 5px;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 5px;
+  }
+
+  .GameContainer > .GameColumn > .Field{
+    transition: background-color 400ms linear;
+    display: block;
+    background-color: rgb(255, 255, 255, 0.2);
+    height: 50px;
+    padding: 10px;
+  }
+
+  .GameContainer > .GameColumn > .ButtonField{
+    display: block;
+    padding: 10px;
+  }
+
+  .ColumnButton{
+    width: 100%
+  }
+  </style>
+</head>
+<body>
+<div id="GameHud">
+  <h1> Let's play Connect Four</h1>
+  <h3 id="GameMessage"> Ready? </h3>
+  <button onclick = "startGame()" id = "StartButton" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+    Start!
+  </button>
+</div>
+
+  <div class="GameContainer">
+    <div class="GameColumn">
+      <div class = "ButtonField">
+      <button onclick = "throwAndDraw(0)" class="ColumnButton mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+        Throw
+      </button>
+      </div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+    </div>
+
+    <div class="GameColumn">
+      <div class = "ButtonField">
+      <button onclick = "throwAndDraw(1)" class="ColumnButton mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+        Throw
+      </button>
+      </div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+    </div>
+
+    <div class="GameColumn">
+      <div class = "ButtonField">
+      <button onclick = "throwAndDraw(2)" class="ColumnButton mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+        Throw
+      </button>
+      </div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+    </div>
+
+    <div class="GameColumn">
+      <div class = "ButtonField">
+      <button onclick = "throwAndDraw(3)" class="ColumnButton mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+        Throw
+      </button>
+      </div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+    </div>
+
+    <div class="GameColumn">
+      <div class = "ButtonField">
+      <button onclick = "throwAndDraw(4)" class="ColumnButton mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+        Throw
+      </button>
+      </div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+    </div>
+
+    <div class="GameColumn">
+      <div class = "ButtonField">
+      <button onclick = "throwAndDraw(5)" class="ColumnButton mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+        Throw
+      </button>
+      </div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+    </div>
+
+    <div class="GameColumn">
+      <div class = "ButtonField">
+      <button onclick = "throwAndDraw(6)" class="ColumnButton mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+        Throw
+      </button>
+      </div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+      <div class = "Field"></div>
+    </div>
+
+  </div>
+
+<script>
+  const gameRules = 
+  {
+    requiredNeighboursToWin : 4,
+    boardWidth : 7,
+    boardHeight : 6,
+    playersColors : ["rgba(250, 10, 10, 0.7)", "rgba(10, 10, 250, 0.7)"],
+  }
+
+  let gameState =
+  {
+    rules : gameRules,
+    board : [],
+    gameInProgress : true,
+    currentPlayer : 1,
+    nextPlayer : 2
+  }
+
+
+  function startGame()
+  {
+    prepareBoard();
+    document.querySelector(".GameContainer").style.opacity = 1;
+    startButton = document.getElementById("StartButton");
+    startButton.parentNode.removeChild(startButton);
+    setGameMessage("Go!");
+  }
+
+  function prepareBoard()
+  {
+    for (let row = 0; row < gameState.rules.boardHeight; row++)
+    {
+      gameState.board.push(new Array(gameState.rules.boardWidth).fill(0));    
+    }
+  }
+
+  function throwCoin(column, coin, board)
+  {
+    let row;
+    for(row = 0; row < gameState.rules.boardHeight; row++)
+    {
+      if(board[row][column] != 0)
+      {
+        break;
+      }
+    }
+    board[row-1][column] = coin;
+    return (row - 1);
+  }
+
+  function isWinner(board, lastMove, playerTag)
+  {
+    let neighboursNumber = 0;
+    let currentRow = lastMove[0];
+    const column = lastMove[1];
+    const row = lastMove[0];
+
+    while (currentRow < gameState.rules.boardHeight && board[currentRow][column] == playerTag)
+    {
+      neighboursNumber++;
+      currentRow++;
+    }
+
+    if (neighboursNumber >= 4)
+    {
+      return true;
+    }
+
+    neighboursNumber = 0;
+    let currentColumn = lastMove[1];
+    while (currentRow != -1 && board[row][currentColumn] == playerTag)
+    {
+      neighboursNumber++;
+      currentColumn--;;
+    }
+
+    while (currentRow != gameState.rules.boardHeight && board[row][currentColumn] == playerTag)
+    {
+      neighboursNumber++;
+      currentColumn++;
+    }
+
+    if (neighboursNumber == 4)
+    {
+      return true;
+    }
+
+    return false;
+  }
+
+  function getGameColumn(columnNumber)
+  {
+    let columns = document.querySelectorAll(".GameColumn");
+    return columns[columnNumber];
+  }
+
+  function getFieldAtGivenRowAndColumn(row, column)
+  {
+    let fields = getGameColumn(column).querySelectorAll(".Field");
+    return fields[row];
+  }
+
+  function delay(t, v) {
+   return new Promise(function(resolve) { 
+       setTimeout(resolve.bind(null, v), t)
+   });
+}
+
+  Promise.prototype.delay = function(t) {
+      return this.then(function(v) {
+          return delay(t, v);
+      });
+  }
+
+  function changeFieldColor(row, column, playerNumber, color)
+  {
+    let fieldToChange = getFieldAtGivenRowAndColumn(row, column);
+    fieldToChange.style.backgroundColor = color;
+  }
+
+  function simulateThrowingEffect(row, column, playerNumber)
+  {
+    let actionChain = Promise.resolve();
+    for (let coloredRow = 0; coloredRow < row; coloredRow++)
+    {
+      actionChain = actionChain.then(() => {changeFieldColor(coloredRow, column, playerNumber, gameState.rules.playersColors[playerNumber-1])})
+       .delay(250)
+       .then( () => {changeFieldColor(coloredRow, column, playerNumber, "rgb(255, 255, 255, 0.2")});
+    }
+    actionChain = actionChain.then(() => {changeFieldColor(row, column, playerNumber, gameState.rules.playersColors[playerNumber-1])})
+    .then(() => {changeButtonOperationalState(column, gameState.gameInProgress)});
+  }
+
+  function setGameMessage(message)
+  {
+    document.getElementById("GameMessage").innerHTML = message;
+  }
+
+  function changeButtonOperationalState(column, isEnabled)
+  {
+    let gameColumn = getGameColumn(column);
+    gameColumn.querySelector(".ColumnButton").disabled = !isEnabled;
+  }
+
+  function refreshGameContainer(row, column, player)
+  {
+    changeButtonOperationalState(column, false);
+    simulateThrowingEffect(row, column, player);
+    blockButtonForFullColumn(row, column);
+    prepareNewMessage();
+  }
+
+  function prepareNewMessage()
+  {
+    if (!gameState.gameInProgress)
+    {
+      setGameMessage("Winner is: Player" + gameState.currentPlayer);
+      blockButtons();
+    }
+    else
+    {
+      setGameMessage("Your move Player" + gameState.nextPlayer);
+    }
+  }
+
+  function blockButtons()
+  {
+    let buttons = document.querySelectorAll(".ColumnButton");
+    for (let button of buttons)
+    {
+      button.disabled = true;
+    }
+  }
+  
+  function blockButtonForFullColumn(row, column)
+  {
+    if (row == 0)
+    {
+      let columns = document.querySelectorAll(".GameColumn");
+      let button = columns[column].querySelectorAll(".ColumnButton");
+      button[0].disabled = true;
+    }
+  }
+
+  function throwAndDraw(column)
+  {
+    changeButtonOperationalState(column, false);
+    row = throwCoin(column, gameState.currentPlayer, gameState.board);
+
+    gameState.gameInProgress = !isWinner(gameState.board, [row, column], gameState.currentPlayer);
+
+    refreshGameContainer(row, column, gameState.currentPlayer);
+    gameState.currentPlayer = gameState.nextPlayer;
+    gameState.nextPlayer = (gameState.currentPlayer % 2) + 1;
+  }
+
+
+ 
+</script>
+</body>
+</html>
